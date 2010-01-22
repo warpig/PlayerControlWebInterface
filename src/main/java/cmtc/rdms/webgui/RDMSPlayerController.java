@@ -17,6 +17,7 @@ public class RDMSPlayerController {
 	private static final Logger log = cmtc.pass.CisPassFactory
 			.getSimpleLogger("RDMSWEBSERVER");
 	private boolean debug = true;
+	private boolean loadTestData = true;
 
 	// public static final String SRCH_MARKING_TEXT = "srch_marking_text";
 	// public static final String SRCH_FORCE = "srch_force_id";
@@ -28,9 +29,9 @@ public class RDMSPlayerController {
 			if (debug)
 				log.setLevel(Level.FINE);
 			psm = new CNTaskPlayerStateManager();
-			if(debug){
-			psm.remove(psm.getPlayerStateList());
-			psm.addUpdate(PlayerSimulator.getVariedFakePlayers());
+			if (loadTestData) {
+				psm.remove(psm.getPlayerStateList());
+				psm.addUpdate(PlayerSimulator.getVariedFakePlayers());
 			}
 		} catch (CisPassException e) {
 			e.printStackTrace();
@@ -61,7 +62,8 @@ public class RDMSPlayerController {
 	 * @return
 	 */
 	public synchronized List<PlayerState> getPlayers(String entityIdStr,
-			String marking_text, DisForce force, DisPredefinedEntity type) {
+			String marking_text, DisForce force, DisPredefinedEntity type,
+			boolean allowReportingRadios, boolean allowNonReportingRadios) {
 		ArrayList<PlayerState> r = new ArrayList<PlayerState>();
 		// Walk through list and only add players if they did not get flagged to
 		// not add.
@@ -83,7 +85,7 @@ public class RDMSPlayerController {
 					log.fine("Player filtered because markingtext "
 							+ p.getMarkingText() + " does not contain "
 							+ marking_text);
-			} else if (force != null  && !p.getDisForce().equals(force)) {
+			} else if (force != null && !p.getDisForce().equals(force)) {
 				doAdd = false;
 				log.fine("Player filtered because force id " + p.getForceId()
 						+ " != " + force.getForceId());
@@ -93,12 +95,30 @@ public class RDMSPlayerController {
 						+ p.getPredefinedEntityId() + " != "
 						+ type.getPredefinedEntityId());
 			}
+			if (p.isInConectivity()) {
+				if (allowReportingRadios == false) {
+					doAdd = false;
+					log.fine("Player filtered because allowReportingRadios = "
+							+ allowReportingRadios
+							+ " but player conectivity is "
+							+ p.isInConectivity());
+				}
+			} else {
+				if (allowNonReportingRadios == false) {
+					doAdd = false;
+					log
+							.fine("Player filtered because allowNonReportingRadios = "
+									+ allowNonReportingRadios
+									+ " but player conectivity is "
+									+ p.isInConectivity());
+				}
+			}
 			if (doAdd) {
 				r.add(p);
 				if (debug)
 					log.fine("Player was added to the list: " + p.toString());
 			} else {
-				if (debug)
+				if (false||debug)
 					log.fine("Player p was filtered out: " + p.toString());
 			}
 		}

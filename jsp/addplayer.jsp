@@ -21,30 +21,33 @@
 	<!-- Define vars for this page -->
 		<jsp:declaration><![CDATA[
 	RDMSPlayerController pc = new RDMSPlayerController();
-	List<PlayerState> players;
-	String srch_entity_id_text = "";
-	String srch_marking_text = "";
+	String entity_id_text = "";
+	String marking_text = "";
 	boolean radioReporting = true;
 	boolean nonRadioReporting = true;
 	DisForce selected_force = null;
-	DisPredefinedEntity selected_type = null;]]></jsp:declaration>
+	DisPredefinedEntity selected_type = null;
+	]]></jsp:declaration>
 	<!--  done defining vars -->
+	
+	
+	
 	
 	<!-- Now set vars -->
 	<jsp:scriptlet><![CDATA[
-		srch_marking_text = request.getParameter("srch_marking_text");
-		if(srch_marking_text==null)srch_marking_text="";
-		srch_entity_id_text = request.getParameter("srch_entity_id_text");
-		if(srch_entity_id_text==null)srch_entity_id_text="";
+		marking_text = request.getParameter("marking_text");
+		if(marking_text==null)marking_text="";
+		entity_id_text = request.getParameter("entity_id_text");
+		if(entity_id_text==null)entity_id_text="";
 
 		try{
-			int forceid = Integer.parseInt(request.getParameter("srch_force_id"));
+			int forceid = Integer.parseInt(request.getParameter("force_id"));
 			selected_force = DisForce.getDisForce(forceid);
 		}catch(NumberFormatException e){
 			selected_force = null;
 		}
 		try{
-			int typeid = Integer.parseInt(request.getParameter("srch_type_id"));
+			int typeid = Integer.parseInt(request.getParameter("type_id"));
 			selected_type = DisPredefinedEntity.queryById(typeid);
 		}catch(NumberFormatException e){
 			selected_type = null;
@@ -62,27 +65,23 @@
 		}
 		 
 		
-		//Now create player list using all the search parms...
-		players = pc.getPlayers(srch_entity_id_text, srch_marking_text, selected_force, selected_type,radioReporting,nonRadioReporting);
-		pc.log(Level.CONFIG,"radioReporting=" + request.getParameter("radioReporting")+ "\n "+ "nonRadioReporting="+request.getParameter("nonRadioReporting"));
-
+	
 		]]></jsp:scriptlet>
 	<!-- done setting vars -->
 	
 	
-	<h1>Search Entities</h1>
+	<h1>Edit Entity</h1>
 
 	<!-- Search form elements -->
 	<form action='?' method='get' name="playerform">
 	
 	<p>Entity ID: 
 	<jsp:scriptlet><![CDATA[
-	out.println("<input type='text' name='srch_entity_id_text' value=\"" + srch_entity_id_text+ "\" />");
+	out.println("<input type='text' name='entity_id_text' value=\"" + entity_id_text+ "\" />");
 	]]></jsp:scriptlet>
 	</p>
 	
-	<p>Force: <select name="srch_force_id"  onChange="document.playerform.submit()" >
-	<option value="-1">All Forces</option>
+	<p>Force: <select name="force_id"   >
 	<jsp:scriptlet><![CDATA[
 	for (DisForce f : pc.getForceList()) {
 		if(f.equals(selected_force)){
@@ -96,8 +95,7 @@
 	]]></jsp:scriptlet>
 	</select></p>
 	
-	<p>Type: <select name="srch_type_id" onChange="document.playerform.submit()">
-	<option value="-1">All Types</option>
+	<p>Type: <select name="type_id" >
 	<jsp:scriptlet><![CDATA[
 	for (DisPredefinedEntity pde : pc.getTypesList()) {
 		if(pde.equals(selected_type)){
@@ -113,57 +111,18 @@
 	
 	<p>Label: 
 	<jsp:scriptlet><![CDATA[
-	out.println("<input type='text' name='srch_marking_text' value=\"" + srch_marking_text+ "\" />");
+	out.println("<input type='text' name='marking_text' value=\"" + marking_text+ "\" />");
 	]]></jsp:scriptlet>
 	</p>
 	
 	<input type="submit" />
 	
-	<p>
-	<jsp:scriptlet><![CDATA[
-	   if(nonRadioReporting){
-		   out.println("Non-Reporting Radios <input type=\"checkbox\" name=\"nonRadioReporting\" value=\"nonRadioReporting\" onChange=\"document.playerform.submit()\" checked=\"checked\" />");
-	   }else{
-		   out.println("Non-Reporting Radios <input type=\"checkbox\" name=\"nonRadioReporting\" value=\"nonRadioReporting\" onChange=\"document.playerform.submit()\" />");
-	   }
-	   if(radioReporting){
-		   out.println("Reporting Radios <input type=\"checkbox\" name=\"radioReporting\" value=\"radioReporting\" onChange=\"document.playerform.submit()\" checked=\"checked\" />");
-	   }else{
-		   out.println("Reporting Radios <input type=\"checkbox\" name=\"radioReporting\" value=\"radioReporting\" onChange=\"document.playerform.submit()\" />");
-	   }
-	]]></jsp:scriptlet>
-	</p>
 	
-	<p><a href="addplayer">Add Player</a></p>
+	
 	</form>
 	<!--  end search form -->
 	
 	
-
-	<!-- Show table of players that match search criteria -->
-	<table>
-		<tr>
-			<th>Entity ID</th>
-			<th>Force</th>
-			<th>Type</th>
-			<th>Label</th>
-			<th>Grid</th>
-			<th>Last Report</th>
-			<th>Status</th>
-		</tr>
-		<jsp:scriptlet>for (PlayerState p : players) {</jsp:scriptlet>
-		<tr>
-			<td><jsp:expression>p.getEntityId()</jsp:expression></td>
-			<td><jsp:expression>p.getDisForce().getDescription()</jsp:expression></td>
-			<td><jsp:expression>p.getCisKind()</jsp:expression></td>
-			<td><jsp:expression>p.getMarkingText()</jsp:expression></td>
-			<td><jsp:expression>p.getMgrs()</jsp:expression></td>
-			<td><jsp:expression>p.getLastReport()</jsp:expression></td>
-			<td><jsp:expression>p.getMxHealthStatus().toString()</jsp:expression></td>
-		</tr>
-		<jsp:scriptlet>}</jsp:scriptlet>
-	</table>
-	<!-- done showing players from seatch -->
 
 
 	<!-- show debug informations if debug is on -->
