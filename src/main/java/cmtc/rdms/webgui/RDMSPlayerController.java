@@ -27,5 +27,9 @@ public class RDMSPlayerController {
 	public List<PlayerState> getPlayers(){
 		return psm.getPlayerStateList();
 	}
+	
+	public List<PlayerState> getPlayers(String marking_text){
+		return psm.getPlayerStateListByMarkingSearch(marking_text);
+	}
 
 }

@@ -12,6 +12,8 @@ import cmtc.pass.CisPassException;
 
 import com.sun.grizzly.http.embed.GrizzlyWebServer;
 import com.sun.grizzly.http.servlet.ServletAdapter;
+import com.sun.grizzly.tcp.StaticResourcesAdapter;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 
 /**
  * <p>
@@ -37,7 +39,6 @@ public class JspWebServer {
 
 	public JspWebServer(int port) throws Exception {
 		this.port = port;
-		this.jspMaps = "welcome:welcome.jsp,findplayer:findplayer.jsp";
 		// first compile the JSP
 		this.compileJSP();
 
@@ -54,15 +55,21 @@ public class JspWebServer {
 				// "./web_jasper.xml",
 				"-compile" };
 		JspC jasper = new JspC();
+		// Reference: https://jira.jboss.org/jira/browse/JBWEB-87
+		jasper.setCompilerSourceVM("1.5");
+		jasper.setCompilerTargetVM("1.5");
 		jasper.setArgs(jasperParams);
 		jasper.execute();
 		log.config("compilation done");
 	}
 
 	public void launch() {
-		GrizzlyWebServer ws = new GrizzlyWebServer(port);
 
 		try {
+			GrizzlyWebServer ws = new GrizzlyWebServer(port);
+			// ,System.getProperty("user.dir")+"/www"
+
+
 			// need to load JspRuntimeContext
 			Class.forName("org.apache.jasper.compiler.JspRuntimeContext");
 
@@ -74,20 +81,22 @@ public class JspWebServer {
 							&& f.getName().toLowerCase().endsWith(".jsp")) {
 						String basename = f.getName();
 						log.config("Adding jsp " + basename + " (" + f + ")");
-						System.out.println("=== here"+basename.split("\\.").length);
+						System.out.println("=== here"
+								+ basename.split("\\.").length);
 						String uriPart = basename.split("\\.")[0];
 						String jspClassPart = jspPackageName + "."
 								+ basename.replace(".", "_");
 						ServletAdapter sa = new ServletAdapter();
+						sa.setLogger(log);
 						sa.setContextPath("/" + uriPart);
 						Servlet servlet = (Servlet) com.sun.grizzly.util.ClassLoaderUtil
 								.load(jspClassPart);
 						sa.setServletInstance(servlet);
 						ws.addGrizzlyAdapter(sa, new String[] {});
-						
+
 						log.config("Mapped jsp file " + f
-								 + " to Servlet context to uri /" + uriPart
-								 + " using compiled version " + jspClassPart);
+								+ " to Servlet context to uri /" + uriPart
+								+ " using compiled version " + jspClassPart);
 					}
 				}
 			} else {
@@ -95,23 +104,6 @@ public class JspWebServer {
 						"Could not find jsp source dir " + dir + "/"
 								+ jspDirName);
 			}
-
-			// String[] jspMap = this.jspMaps.split(",");
-			// for (String map : jspMap) {
-			// String uriPart = map.split(":")[0];
-			// String jspName = map.split(":")[1];
-			// String jspClassPart = jspPackageName + "."
-			// + jspName.replace(".", "_");
-			// ServletAdapter sa = new ServletAdapter();
-			// sa.setContextPath("/" + uriPart);
-			// Servlet servlet = (Servlet) com.sun.grizzly.util.ClassLoaderUtil
-			// .load(jspClassPart);
-			// sa.setServletInstance(servlet);
-			// ws.addGrizzlyAdapter(sa, new String[] {});
-			// log.config("Mapped jsp file " + jspName
-			// + " to Servlet context to uri /" + uriPart
-			// + " using compiled version " + jspClassPart);
-			// }
 
 			ws.start();
 		} catch (Exception e) {
