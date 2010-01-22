@@ -2,6 +2,7 @@ package cmtc.rdms.webgui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.Servlet;
@@ -39,6 +40,7 @@ public class JspWebServer {
 
 	public JspWebServer(int port) throws Exception {
 		this.port = port;
+		log.setLevel(Level.FINE);
 		// first compile the JSP
 		this.compileJSP();
 
