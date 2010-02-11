@@ -46,6 +46,8 @@ public class JspWebServer {
 
 	private boolean doJSPClean = true;
 
+	private boolean debug = false;
+
 
 
 
@@ -60,6 +62,16 @@ public class JspWebServer {
 
 
 
+	/**
+	 * compiles jsp into class (servlets) creating intermediate java files. This
+	 * method expects jsp files to be in one directory (no recursion) and can
+	 * not have <i>_</i> characters in the jsp file name. Recommended convention
+	 * is to begin included jsp with the name "partial". For example
+	 * <i>partialHeader.jsp</i>. This partial can be safely included using the directive 
+	 * <p>jsp:directive.include file="partialHeader.jsp"</p>
+	 * 
+	 * @throws Exception
+	 */
 	public void compileJSP() throws Exception {
 		String dir = System.getProperty("user.dir");
 		File jspDir = new File(dir + File.separator + jspDirName);
@@ -80,31 +92,13 @@ public class JspWebServer {
 						+ jspFile.getName().replace(".", "_") + ".java");
 				File classFile = new File(targetDir + File.separator
 						+ jspFile.getName().replace(".", "_") + ".class");
-				System.out
-				.println("jsp ="
-						+ jspFile
-						+ " ,java file="
-						+ javaFile + " ,class file="
-						+ classFile);
-				if (jspFile.isFile()
-						&& jspFile.toString().toLowerCase().endsWith(".jsp")) {
-					if (javaFile.isFile()
-							&& jspFile.lastModified() > javaFile.lastModified()) {
-						// jsp has been modified. Delete java file and class
-						// file for jsp...
-
-						javaFile.delete();
-						if (classFile.isFile())
-							classFile.delete();
-						System.out
-								.println("jsp "
-										+ jspFile
-										+ " has been updated. Removed outdated java file "
-										+ javaFile + " and class file "
-										+ classFile);
-					} else {
-						System.out.println("jsp " + jspFile + " is unchanged");
-					}
+				if(this.isDebug()) System.out.println("jsp =" + jspFile + " ,java file="
+						+ javaFile + " ,class file=" + classFile);
+				if (classFile.isFile()){
+					classFile.delete();
+				}
+				if (javaFile.isFile()){
+					javaFile.delete();
 				}
 			}
 		}
@@ -115,7 +109,6 @@ public class JspWebServer {
 		jasper.setArgs(jasperParams);
 		jasper.execute();
 		log.config("compilation done");
-		System.exit(2);
 
 	}
 
@@ -208,6 +201,20 @@ public class JspWebServer {
 
 	public boolean isDoJSPClean() {
 		return doJSPClean;
+	}
+
+
+
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+
+
+
+	public boolean isDebug() {
+		return debug;
 	}
 
 }

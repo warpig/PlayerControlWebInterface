@@ -37,7 +37,7 @@ public final class addplayer_jsp extends org.apache.jasper.runtime.HttpJspBase
     _jspx_dependants = new java.util.ArrayList(3);
     _jspx_dependants.add("/partialheader.jsp");
     _jspx_dependants.add("/partialPlayeredit.jsp");
-    _jspx_dependants.add("/_Adminbox.jsp");
+    _jspx_dependants.add("/partialAdminbox.jsp");
   }
 
   private javax.el.ExpressionFactory _el_expressionfactory;

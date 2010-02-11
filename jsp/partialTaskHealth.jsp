@@ -15,7 +15,7 @@ It expects a PlayerState object to be set in the session key "sessionPlayer".
 		<![CDATA[ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> ]]>
 	</jsp:text>
 
-
+ 
 
 
 	<jsp:declaration><![CDATA[RDMSPlayerController con = new RDMSPlayerController();]]></jsp:declaration>
@@ -24,12 +24,13 @@ It expects a PlayerState object to be set in the session key "sessionPlayer".
 
 	<table>
 		<tr>
-			<td>Name</td>
+			<td>Task Name</td>
 			<td>Status</td>
 			<td>Description</td>
 		</tr>
 		<jsp:scriptlet><![CDATA[for (MxObjectHealth task : con.getTaskHealthList()) {
-				out.print("<tr><td>" + task.getMxObjectName() + "</td><td>"
+				out.print("LL<tr class=\""
+						+ task.getMxHealthStatus() + "\">"+"<td>" + task.getMxObjectName() + "</td><td>"
 						+ task.getMxHealthStatus() + "</td><td class=\""
 						+ task.getMxHealthStatus() + "\">"
 						+ task.getMxHealthStatusNote() + "</td></tr>");

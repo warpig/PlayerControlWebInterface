@@ -7,10 +7,21 @@ body {
 	background-color: #bdbdbd;
 }
 
+/*
+classes that color based on the health... 
+*/
+
+
 .FullyFunctioning {
-		background-color: #000093;
+		background-color: #4C934E;
 	
 }
+
+.FunctioningWithWarnings  { background-color: #FFFA87;}
+.ErrorConditionStatus     { background-color: #FF3025;}
+.UnknownStatus            { background-color: #BCBCBC;}
+.NotReporting             { background-color: #FF3025;}
+.Closed                   { background-color: #BF29B9;}
 
 div.flashErrorString {
 	background-color: #ff5050;

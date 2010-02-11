@@ -77,7 +77,7 @@
 	<!-- Search form elements -->
 	<jsp:directive.include file="partialPlayeredit.jsp" />
 	
-	<jsp:directive.include file="_Adminbox.jsp" />
+	<jsp:directive.include file="partialAdminbox.jsp" />
 
 	</body>
 	</html>

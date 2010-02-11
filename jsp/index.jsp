@@ -89,7 +89,7 @@
 	<!-- done setting vars -->
 	
 	
-	<jsp:directive.include file="partials/header.jsp" />
+	<jsp:directive.include file="partialHeader.jsp" />
 	
 	
 	<h1>Search Entities</h1>
@@ -189,7 +189,7 @@
 
 
 		<!-- show debug informations if debug is on -->
-	<jsp:directive.include file="partials/adminbox.jsp" />
+	<jsp:directive.include file="partialAdminbox.jsp" />
 	<!--  done showing debug -->
 	</body>
 	</html>
