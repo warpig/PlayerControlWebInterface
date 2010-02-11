@@ -4,13 +4,13 @@ public class RDMSPlayerWebServer extends JspWebServer {
 
 	// public static CNTaskPlayerStateManager psm;
 	public static RDMSPlayerController controller;
-	
+
 	public RDMSPlayerWebServer(int port) throws Exception {
 		super(port);
-		controller = new RDMSPlayerController();
-
+		if (controller == null)
+			controller = new RDMSPlayerController();
 	}
-	
+
 	/**
 	 * @param args
 	 */

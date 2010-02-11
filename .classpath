@@ -6,16 +6,13 @@
 	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/el-api.jar"/>
-	<classpathentry kind="lib" path="lib/grizzly-framework-1.9.5-SNAPSHOT-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/grizzly-framework-1.9.5-SNAPSHOT-sources.jar"/>
-	<classpathentry kind="lib" path="lib/grizzly-framework-1.9.5-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/grizzly-webserver-1.9.5-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-el.jar"/>
 	<classpathentry kind="lib" path="lib/jasper-jdt.jar"/>
 	<classpathentry kind="lib" path="lib/jasper.jar"/>
 	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-juli.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/prtls"/>
+	<classpathentry kind="lib" path="lib/grizzly-webserver-1.9.9.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rdmsv3"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -3,13 +3,14 @@
 	<jsp:directive.page language="java"
 		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
 	<jsp:directive.page
-		import="java.util.*,java.util.logging.*,cmtc.rdms.entities.*,cmtc.rdms.webgui.*" />
+		import="java.util.*,java.util.logging.*,cmtc.cn.entities.*,cmtc.rdms.webgui.*" />
 	<jsp:text>
 		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
 	</jsp:text>
 	<jsp:text>
 		<![CDATA[ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> ]]>
 	</jsp:text>
+	<meta http-equiv="refresh" content="30" />
 	<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -32,6 +33,7 @@
 	
 	<!-- Now set vars -->
 	<jsp:scriptlet><![CDATA[
+	                        
 		srch_marking_text = request.getParameter("srch_marking_text");
 		if(srch_marking_text==null)srch_marking_text="";
 		srch_entity_id_text = request.getParameter("srch_entity_id_text");
@@ -40,14 +42,24 @@
 		try{
 			int forceid = Integer.parseInt(request.getParameter("srch_force_id"));
 			selected_force = DisForce.getDisForce(forceid);
+			if(selected_force!=null)session.setAttribute("selected_force",selected_force);
 		}catch(NumberFormatException e){
-			selected_force = null;
+			//Not set in parm. fall back to session, if any.
+			 Object o = session.getAttribute("selected_force");
+			 if(o instanceof DisForce){
+				 selected_force = (DisForce)o;
+			 }
 		}
 		try{
 			int typeid = Integer.parseInt(request.getParameter("srch_type_id"));
 			selected_type = DisPredefinedEntity.queryById(typeid);
+			if(selected_type!=null)session.setAttribute("selected_type",selected_type);
 		}catch(NumberFormatException e){
-			selected_type = null;
+			//Not set in parm. fall back to session, if any.
+			 Object o = session.getAttribute("selected_type");
+			 if(o instanceof DisForce){
+				 selected_type = (DisPredefinedEntity)o;
+			 }		
 		}
 		
 		if(request.getParameter("radioReporting")==null) {
@@ -60,14 +72,24 @@
 		}else{
 			nonRadioReporting = true;
 		}
+		
+		if(radioReporting==false && nonRadioReporting==false){
+			//can not filter out everything. Set to all and let user turn off one or the other...
+			radioReporting=true;
+			nonRadioReporting=true;
+		}
 		 
+		session.setMaxInactiveInterval(1000*60*60);
 		
 		//Now create player list using all the search parms...
 		players = pc.getPlayers(srch_entity_id_text, srch_marking_text, selected_force, selected_type,radioReporting,nonRadioReporting);
-		pc.log(Level.CONFIG,"radioReporting=" + request.getParameter("radioReporting")+ "\n "+ "nonRadioReporting="+request.getParameter("nonRadioReporting"));
+		//pc.log(Level.CONFIG,"radioReporting=" + request.getParameter("radioReporting")+ "\n "+ "nonRadioReporting="+request.getParameter("nonRadioReporting"));
 
 		]]></jsp:scriptlet>
 	<!-- done setting vars -->
+	
+	
+	<jsp:directive.include file="partials/header.jsp" />
 	
 	
 	<h1>Search Entities</h1>
@@ -137,6 +159,7 @@
 	<p><a href="addplayer">Add Player</a></p>
 	</form>
 	<!--  end search form -->
+		<jsp:directive.include file="partialTaskHealth.jsp" />
 	
 	
 
@@ -153,7 +176,7 @@
 		</tr>
 		<jsp:scriptlet>for (PlayerState p : players) {</jsp:scriptlet>
 		<tr>
-			<td><jsp:expression>p.getEntityId()</jsp:expression></td>
+			<td><jsp:scriptlet>out.println(""+pc.getEditPlayerURL(p.getEntityId()));</jsp:scriptlet></td> 
 			<td><jsp:expression>p.getDisForce().getDescription()</jsp:expression></td>
 			<td><jsp:expression>p.getCisKind()</jsp:expression></td>
 			<td><jsp:expression>p.getMarkingText()</jsp:expression></td>
@@ -166,21 +189,9 @@
 	<!-- done showing players from seatch -->
 
 
-	<!-- show debug informations if debug is on -->
-	<div>
-	<jsp:scriptlet><![CDATA[
-	if (pc.isDebug()) {
-		out.println("<h2>Debug is on</h2>\n");
-				for (Enumeration e = request.getParameterNames(); e
-						.hasMoreElements();) {
-					String name = (String) e.nextElement();
-					out.println("<p>" + name + "="+request.getParameter(name) +"</p>\n");
-				}
-			}
-	
-	]]></jsp:scriptlet>
-			</div>
-			<!--  done showing debug -->
+		<!-- show debug informations if debug is on -->
+	<jsp:directive.include file="partials/adminbox.jsp" />
+	<!--  done showing debug -->
 	</body>
 	</html>
 </jsp:root>

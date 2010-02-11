@@ -3,7 +3,7 @@
 	<jsp:directive.page language="java"
 		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
 	<jsp:directive.page
-		import="java.util.*,java.util.logging.*,cmtc.rdms.entities.*,cmtc.rdms.webgui.*" />
+		import="java.util.*,java.util.logging.*,cmtc.cn.entities.*,cmtc.rdms.webgui.*" />
 	<jsp:text>
 		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
 	</jsp:text>
@@ -15,131 +15,70 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<link href="/www/styles/player_control.css" type="text/css"
 		rel="stylesheet" />
-	<title>Find Player</title>
+	<title>Edit Player</title>
 	</head>
 	<body>
 	<!-- Define vars for this page -->
-		<jsp:declaration><![CDATA[
-	RDMSPlayerController pc = new RDMSPlayerController();
-	String entity_id_text = "";
-	String marking_text = "";
-	boolean radioReporting = true;
-	boolean nonRadioReporting = true;
-	DisForce selected_force = null;
-	DisPredefinedEntity selected_type = null;
+	<jsp:declaration><![CDATA[
+	RDMSPlayerController pc = new RDMSPlayerController();	
 	]]></jsp:declaration>
 	<!--  done defining vars -->
 	
 	
 	
 	
-	<!-- Now set vars -->
-	<jsp:scriptlet><![CDATA[
-		marking_text = request.getParameter("marking_text");
-		if(marking_text==null)marking_text="";
-		entity_id_text = request.getParameter("entity_id_text");
-		if(entity_id_text==null)entity_id_text="";
-
-		try{
-			int forceid = Integer.parseInt(request.getParameter("force_id"));
-			selected_force = DisForce.getDisForce(forceid);
-		}catch(NumberFormatException e){
-			selected_force = null;
-		}
-		try{
-			int typeid = Integer.parseInt(request.getParameter("type_id"));
-			selected_type = DisPredefinedEntity.queryById(typeid);
-		}catch(NumberFormatException e){
-			selected_type = null;
-		}
+	<!-- Now set vars and Do actions... -->
+	<jsp:scriptlet><![CDATA[if(request.getParameter("save_player_edit")==null){
+		//here for the first time...
+		session.setAttribute(pc.sessionPlayer,new PlayerState());
+	} else if(request.getParameter("save_player_edit").equals("submit")){
+		//User hit submit button. Attempt save...
+ 
+        //get values from form params and validate
+        boolean entityIdValid=pc.isValidEntityId(request.getParameter("entity_id_text"));
+		String marking_text =request.getParameter("marking_text");
+		DisForce force = pc.getForce(request.getParameter("force_id")); 
+		DisPredefinedEntity type = pc.getType(request.getParameter("type_id"));
 		
-		if(request.getParameter("radioReporting")==null) {
-			radioReporting = false;
-		}else{
-			radioReporting = true;
+		if(entityIdValid==false){
+			session.setAttribute(pc.sessionErrorString,"Bad Entity id value: "+request.getParameter("entity_id_text"));
+		} else if(marking_text==null||marking_text.length()<3){
+			session.setAttribute(pc.sessionErrorString,"Bad Player Label id value: "+request.getParameter("marking_text"));
+		} else if(force==null){
+			session.setAttribute(pc.sessionErrorString,"Bad Force value: "+request.getParameter("force_id"));
+		} else if(type==null){
+			session.setAttribute(pc.sessionErrorString,"Bad Type value: "+request.getParameter("type_id"));
+		} else {
+			//we got here so the params were OK. Save is unique
+			int entity_id = Integer.parseInt(request.getParameter("entity_id_text"));
+			PlayerState player = pc.getPlayerState(entity_id);
+			//if it is new it will be null.
+			if(player==null){
+				player = new PlayerState(entity_id,marking_text);
+				player.setDisForce(force);
+				player.configWithDisPredefinedEntity(type);
+				pc.addUpdate(player);
+				session.setAttribute(pc.sessionMessageString,"Player saved.");
+				session.setAttribute("sessionPlayer",player);
+			}else{
+				session.setAttribute(pc.sessionErrorString,"Entity id "+entity_id+" already exists!");
+			}
 		}
-		if(request.getParameter("nonRadioReporting")==null)	{
-			nonRadioReporting = false;
-		}else{
-			nonRadioReporting = true;
-		}
-		 
-		
-	
-		]]></jsp:scriptlet>
+	   	
+	}]]></jsp:scriptlet>
 	<!-- done setting vars -->
+	
+	
+	<jsp:directive.include file="partialheader.jsp" />
 	
 	
 	<h1>Edit Entity</h1>
 
 	<!-- Search form elements -->
-	<form action='?' method='get' name="playerform">
+	<jsp:directive.include file="partialPlayeredit.jsp" />
 	
-	<p>Entity ID: 
-	<jsp:scriptlet><![CDATA[
-	out.println("<input type='text' name='entity_id_text' value=\"" + entity_id_text+ "\" />");
-	]]></jsp:scriptlet>
-	</p>
-	
-	<p>Force: <select name="force_id"   >
-	<jsp:scriptlet><![CDATA[
-	for (DisForce f : pc.getForceList()) {
-		if(f.equals(selected_force)){
-		out.println("<option value=\"" + f.getForceId() + "\" selected=\"selected\">"
-						+ f.getDescription() + "</option>");
-		}else{
-			out.println("<option value=\"" + f.getForceId() + "\">"
-					+ f.getDescription() + "</option>");
-		}
-	}
-	]]></jsp:scriptlet>
-	</select></p>
-	
-	<p>Type: <select name="type_id" >
-	<jsp:scriptlet><![CDATA[
-	for (DisPredefinedEntity pde : pc.getTypesList()) {
-		if(pde.equals(selected_type)){
-		out.println("<option value=\"" + pde.getPredefinedEntityId() + "\" selected=\"selected\">"
-						+ pde.getDescription() + "</option>");
-		}else{
-			out.println("<option value=\"" + pde.getPredefinedEntityId() + "\">"
-					+ pde.getDescription() + "</option>");
-		}
-	}
-	]]></jsp:scriptlet>
-	</select></p>
-	
-	<p>Label: 
-	<jsp:scriptlet><![CDATA[
-	out.println("<input type='text' name='marking_text' value=\"" + marking_text+ "\" />");
-	]]></jsp:scriptlet>
-	</p>
-	
-	<input type="submit" />
-	
-	
-	
-	</form>
-	<!--  end search form -->
-	
-	
+	<jsp:directive.include file="_Adminbox.jsp" />
 
-
-	<!-- show debug informations if debug is on -->
-	<div>
-	<jsp:scriptlet><![CDATA[
-	if (pc.isDebug()) {
-		out.println("<h2>Debug is on</h2>\n");
-				for (Enumeration e = request.getParameterNames(); e
-						.hasMoreElements();) {
-					String name = (String) e.nextElement();
-					out.println("<p>" + name + "="+request.getParameter(name) +"</p>\n");
-				}
-			}
-	
-	]]></jsp:scriptlet>
-			</div>
-			<!--  done showing debug -->
 	</body>
 	</html>
 </jsp:root>
