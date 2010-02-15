@@ -10,11 +10,11 @@
 	<jsp:text>
 		<![CDATA[ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> ]]>
 	</jsp:text>
-	<meta http-equiv="refresh" content="30" />
+	<meta http-equiv="refresh" content="5" />
 	<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-	<link href="/www/styles/player_control.css" type="text/css"
+	<link href="styles/player_control.css" type="text/css"
 		rel="stylesheet" />
 	<title>Find Player</title>
 	</head>
@@ -174,17 +174,20 @@
 			<th>Last Report</th>
 			<th>Status</th>
 		</tr>
-		<jsp:scriptlet>for (PlayerState p : players) {</jsp:scriptlet>
-		<tr>
-			<td><jsp:scriptlet>out.println(""+pc.getEditPlayerURL(p.getEntityId()));</jsp:scriptlet></td> 
-			<td><jsp:expression>p.getDisForce().getDescription()</jsp:expression></td>
-			<td><jsp:expression>p.getCisKind()</jsp:expression></td>
-			<td><jsp:expression>p.getMarkingText()</jsp:expression></td>
-			<td><jsp:expression>p.getMgrs()</jsp:expression></td>
-			<td><jsp:expression>p.getLastReport()</jsp:expression></td>
-			<td><jsp:expression>p.getMxHealthStatus().toString()</jsp:expression></td>
-		</tr>
-		<jsp:scriptlet>}</jsp:scriptlet>
+			<jsp:scriptlet><![CDATA[
+			for (PlayerState p : players) {
+				out.println("<tr class=\""+p.getMxHealthStatus() +"\">");
+				out.print("<td>"+ pc.getEditPlayerURL(p.getEntityId())+"</td>" );
+				out.print("<td>"+ p.getDisForce().getDescription()+"</td>" );
+				out.print("<td>"+ p.getCisKind()+"</td>" );
+				out.print("<td>"+ p.getMarkingText()+"</td>" );
+				out.print("<td>"+ p.getMgrs()+"</td>" );
+				out.print("<td>"+ p.getLastReport()+"</td>" );
+				out.print("<td>"+ p.getMxHealthStatus().toString()+"</td>" );
+				out.println("</tr>");
+			}
+			]]></jsp:scriptlet>
+
 	</table>
 	<!-- done showing players from seatch -->
 

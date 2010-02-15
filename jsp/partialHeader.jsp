@@ -12,7 +12,6 @@
 	</jsp:text>
 
 	
-	Header.jsp
 	<div class="flashErrorString">
 	<jsp:scriptlet><![CDATA[
 	if (session.getAttribute(RDMSPlayerController.sessionMessageString)!= null){ 
