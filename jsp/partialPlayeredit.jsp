@@ -7,7 +7,7 @@ It expects a PlayerState object to be set in the session key "sessionPlayer".
 	<jsp:directive.page language="java"
 		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
 	<jsp:directive.page
-		import="java.util.*,java.util.logging.*,cmtc.cn.entities.*,cmtc.rdms.webgui.*" />
+		import="java.util.*,java.util.logging.*,cmtc.cn.entities.*,cmtc.cn.webgui.*" />
 	<jsp:text>
 		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
 	</jsp:text>
