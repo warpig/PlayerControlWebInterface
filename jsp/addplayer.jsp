@@ -69,7 +69,7 @@
 	<!-- done setting vars -->
 	
 	
-	<jsp:directive.include file="partialheader.jsp" />
+	<jsp:directive.include file="partialHeader.jsp" />
 	
 	
 	<h1>Edit Entity</h1>

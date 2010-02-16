@@ -97,7 +97,8 @@ public class JspWebServer {
 		this.jspDir = jspDir;
 		this.resourceDir = resourceDir;
 		this.port = port;
-		if(!debug)log.setLevel(Level.FINE);
+		if (!debug)
+			log.setLevel(Level.FINE);
 		log.config("JSP file will server on port " + port + ", jsp from dir "
 				+ this.jspDir + ", and resources from " + this.resourceDir);
 		// first compile the JSP
@@ -140,7 +141,6 @@ public class JspWebServer {
 			}
 
 		}
-		log.config("compiling jsp to dir " + targetDir);
 
 		String jasperParams[] = new String[] { "-webapp", jspDir.toString(),
 				"-v", "-p", jspPackageName, "-d", targetDir.toString(), "-l",
@@ -148,27 +148,49 @@ public class JspWebServer {
 				// "-webxml",
 				// "./web_jasper.xml",
 				"-compile" };
+		log.config("compiling jsp " + jspDir + " to dir " + targetDir);
 		if (isDoJSPClean) {
 			// remove any jsp class and java files...
 			for (File classFile : getClassFilesForJSPDir(jspDir)) {
 				File javaFile = new File(classFile.getPath().replace(".class",
 						".java"));
-				if (classFile.isFile()) {
-					classFile.delete();
-					log.config("Removed class file " + classFile);
-				}
 				if (javaFile.isFile()) {
 					javaFile.delete();
 					log.config("Removed java file " + javaFile);
+				} else {
+					log.config(javaFile + " will be generated");
+				}
+				if (classFile.isFile()) {
+					classFile.delete();
+					log.config("Removed class file " + classFile);
+				} else {
+					log.config(classFile + " will be compiled.");
 				}
 			}
 		}
-		JspC jasper = new JspC();
+		JspC j = new JspC();
 		// Reference: https://jira.jboss.org/jira/browse/JBWEB-87
-		jasper.setCompilerSourceVM("1.5");
-		jasper.setCompilerTargetVM("1.5");
-		jasper.setArgs(jasperParams);
-		jasper.execute();
+		j.setCompilerSourceVM("1.5");
+		j.setCompilerTargetVM("1.5");
+		j.setArgs(jasperParams);
+		String jp ="";
+		for(String s:jasperParams){
+			jp += ", "+s;
+		}
+		log.config("jasperParams="+jp);
+//		j.setJspFiles(jspDir.toString());
+		System.out.println("getCompiler "+j.getCompiler());
+		System.out.println("getJspCompilerPath "+j.getJspCompilerPath());
+		System.out.println("getModificationTestInterval "+j.getModificationTestInterval());
+		System.out.println("getDevelopment "+j.getDevelopment());
+		System.out.println("getScratchDir "+j.getScratchDir());
+		System.out.println("getClassPath "+j.getClassPath());
+		System.out.println("getJspConfig "+j.getJspConfig());
+		System.out.println("getCheckInterval "+j.getCheckInterval());
+		System.out.println("getClassPath "+j.getClassPath());
+		
+//		jasper.setPackage("");
+		j.execute();
 		log.config("compilation done");
 
 	}
